@@ -1,0 +1,173 @@
+version: 2.1
+
+executors:
+  terraform-env:
+    docker:
+      - image: hashicorp/terraform:1.9.0
+    working_directory: ~/project
+
+  deploy-env:
+    docker:
+      - image: cimg/openjdk:21.0-node
+    working_directory: ~/project
+
+jobs:
+  tf-security-scan:
+    docker:
+      - image: aquasec/tfsec-ci:latest
+    steps:
+      - checkout
+      - run:
+          name: Run tfsec (Terraform Security & Quality Scanner)
+          command: tfsec .
+
+  backend-test:
+    executor: deploy-env
+    steps:
+      - checkout
+      - run:
+          name: Run Spring Boot Tests
+          command: |
+            cd form-backend
+            mvn clean test
+
+  frontend-test:
+    executor: deploy-env
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            cd form-frontend
+            npm install --legacy-peer-deps
+      - run:
+          name: Install Headless Browser
+          command: |
+            cd form-frontend
+            npx playwright install chromium --with-deps
+      - run:
+          name: Run Angular Tests (Headless)
+          command: |
+            cd form-frontend
+            npm run test -- --watch=false --browsers=chromium
+
+  tf-plan:
+    executor: terraform-env
+    steps:
+      - checkout
+      - run:
+          name: Initialize Terraform
+          command: terraform init
+      - run:
+          name: Validate & Check Formatting
+          command: |
+            terraform fmt -check
+            terraform validate
+      - run:
+          name: Terraform Plan
+          command: terraform plan -out=tfplan
+      - persist_to_workspace:
+          root: .
+          paths:
+            - tfplan
+            - .terraform
+            - .terraform.lock.hcl
+
+  tf-apply:
+    executor: terraform-env
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Terraform Apply
+          command: terraform apply -auto-approve tfplan
+      - run:
+          name: Extracting Deployment Keys
+          command: |
+            terraform output -raw private_key > key.pem
+            chmod 400 key.pem
+            terraform output -raw ec2_public_ip > ec2_ip.txt
+      - persist_to_workspace:
+          root: .
+          paths:
+            - key.pem
+            - ec2_ip.txt
+
+  app-deploy:
+    executor: deploy-env
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Reconstruct .env file from Base64
+          command: echo "$ENV_FILE_BASE64" | base64 --decode > .env
+      - run:
+          name: Install Angular CLI globally
+          command: sudo npm install -g @angular/cli
+      - run:
+          name: Run Application Deployment Pipeline
+          command: |
+            mkdir -p ~/.ssh && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            chmod +x deploy.sh
+            ./deploy.sh
+
+workflows:
+  version: 2
+  test-pipeline:
+    jobs:
+      - backend-test:
+          filters:
+            branches:
+              ignore: deploy
+      - frontend-test:
+          filters:
+            branches:
+              ignore: deploy
+      - tf-security-scan:
+          context:
+            - circle-ci-main-aws
+          filters:
+            branches:
+              ignore: deploy
+
+  deployment-pipeline:
+    jobs:
+      - tf-security-scan:
+          context:
+            - circle-ci-main-aws
+          filters:
+            branches:
+              only: deploy
+      - tf-plan:
+          context:
+            - circle-ci-main-aws
+          requires:
+            - tf-security-scan
+          filters:
+            branches:
+              only: deploy
+      - hold-for-approval:
+          type: approval
+          requires:
+            - tf-plan
+          filters:
+            branches:
+              only: deploy
+      - tf-apply:
+          context:
+            - circle-ci-main-aws
+          requires:
+            - hold-for-approval
+          filters:
+            branches:
+              only: deploy
+      - app-deploy:
+          context:
+            - circle-ci-main-aws
+          requires:
+            - tf-apply
+          filters:
+            branches:
+              only: deploy
