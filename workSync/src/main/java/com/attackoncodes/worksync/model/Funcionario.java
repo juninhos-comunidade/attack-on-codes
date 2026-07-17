@@ -9,8 +9,9 @@ import java.util.UUID;
 @Entity
 @Data
 public class Funcionario {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)

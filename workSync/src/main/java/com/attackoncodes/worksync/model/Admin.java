@@ -11,9 +11,8 @@ import java.util.UUID;
 @Entity
 @Data
 public class Admin {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-
 }
