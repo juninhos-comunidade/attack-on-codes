@@ -2,12 +2,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.1.0</version>
         <relativePath />
     </parent>
+
     <groupId>com.attackoncodes</groupId>
     <artifactId>workSync</artifactId>
     <version>v1.201r</version>
@@ -44,6 +46,7 @@
         <jjwt-token>0.13.0</jjwt-token>
         <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
+
     <dependencies>
 
         <!-- Spring Data JPA -->
@@ -53,6 +56,13 @@
         </dependency>
 
         <!-- Spring Web -->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
@@ -141,6 +151,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security-test</artifactId>
@@ -152,14 +163,17 @@
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
+    -->
     </dependencies>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
                 <configuration>
                     <excludes>
                         <exclude>
@@ -169,16 +183,20 @@
                     </excludes>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+
                 <executions>
                     <execution>
                         <id>default-compile</id>
                         <phase>compile</phase>
+
                         <goals>
                             <goal>compile</goal>
                         </goals>
+
                         <configuration>
                             <annotationProcessorPaths>
                                 <path>
@@ -198,12 +216,15 @@
                             </annotationProcessorPaths>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>default-testCompile</id>
                         <phase>test-compile</phase>
+
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
+
                         <configuration>
                             <annotationProcessorPaths>
                                 <path>
