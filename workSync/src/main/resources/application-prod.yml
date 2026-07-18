@@ -1,0 +1,52 @@
+spring:
+  main:
+    lazy-initialization: true
+  datasource:
+    name: "Work Sync -- Main Database"
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?sslmode=require
+    username: ${DB_USER:}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 240000
+      idle-timeout: 60000
+      minimum-idle: 10
+      maximum-pool-size: 200
+      pool-name: "work-sync-main-pool"
+  jpa:
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+security:
+  front:
+    csrf: ${CSRF_ENABLED:false}
+  tokens:
+    base-path: ${KEYS_PATH}
+    expiration: ${EXPIRATION_KEY:15m}
+    refresh-token: ${REFRESH_KEY:7d}
+      
+supabase:
+  url: ${SUPABASE_URL}
+  service-role-key: ${SUPABASE_ROLE_KEY}
+
+bucket:
+  endpoint: ${CLOUDFLARE_ENDPOINT:}
+  access-key-id: ${CLOUDFLARE_ACCESS_KEY:}
+  secret-access-key: ${CLOUDFLARE_SECRET_KEY:}
+  bucket: ${CLOUDFLARE_BUCKET_NAME:}
+  region: auto
+        
+application:
+  page:
+    size: 20
+
+settings:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS}
+    max-age: 3600
+  security:
+    user: ${ADMIN_USER}
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}

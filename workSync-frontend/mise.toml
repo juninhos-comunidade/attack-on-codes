@@ -1,0 +1,14 @@
+[tools]
+node = "latest"
+bun = "latest"
+
+[env]
+_.file = ".env"
+
+[tasks.install]
+description = "Install Web App Libraries"
+run = "bun install"
+
+[tasks.run]
+description = "Run Web App"
+run = "bun run start"

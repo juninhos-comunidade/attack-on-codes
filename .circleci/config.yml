@@ -1,0 +1,51 @@
+version: 2.1
+
+executors:
+  testing-env:
+    docker:
+      - image: cimg/openjdk:21.0-node
+    working_directory: ~/project
+
+jobs:
+  backend-test:
+    executor: testing-env
+    steps:
+      - checkout
+      - run:
+          name: Run Spring Boot Tests
+          command: |
+            cd workSync
+            mvn clean test
+
+  frontend-test:
+    executor: testing-env
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            cd workSync-frontend
+            npm install --legacy-peer-deps
+      - run:
+          name: Install Headless Browser
+          command: |
+            cd form-frontend
+            npx playwright install chromium --with-deps
+      - run:
+          name: Run Angular Tests (Headless)
+          command: |
+            cd form-frontend
+            npm run test -- --watch=false --browsers=chromium
+
+workflows:
+  version: 2
+  test-pipeline:
+    jobs:
+      - backend-test:
+          filters:
+            branches:
+              ignore: deploy
+      - frontend-test:
+          filters:
+            branches:
+              ignore: deploy

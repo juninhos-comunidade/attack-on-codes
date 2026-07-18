@@ -1,0 +1,13 @@
+[tools]
+maven = "latest"
+
+[env]
+_.file = ".env"
+
+[tasks.build]
+description = "Build the Project Image"
+run = "mvn clean package -DskipTests"
+
+[tasks.run]
+description = "Run Spring App"
+run = "mvn clean spring-boot:run -Dspring-boot.run.arguments='--server.port={{arg(i=0, default=\"8000\")}}'"

@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: attack_on_codes-database
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - attack_on_codes:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  minio:
+    image: minio/minio:latest
+    container_name: attack_on_codes-minio
+    restart: unless-stopped
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${CLOUDFLARE_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${CLOUDFLARE_SECRET_KEY}
+    command: server /data --console-address ":9001"
+    volumes:
+      - attack_on_codes_minio:/data
+    env_file:
+      - .env
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: attack_on_codes-minio-init
+    depends_on:
+      - minio
+    env_file:
+      - .env
+    entrypoint: >
+      /bin/sh -c "
+      sleep 3;
+      mc alias set myminio http://minio:9000 ${CLOUDFLARE_ACCESS_KEY} ${CLOUDFLARE_SECRET_KEY};
+      mc mb myminio/${CLOUDFLARE_BUCKET_NAME} || true;
+      mc anonymous set public myminio/${CLOUDFLARE_BUCKET_NAME} || true;
+      exit 0;
+      "
+
+volumes:
+  attack_on_codes:
+  attack_on_codes_minio:
