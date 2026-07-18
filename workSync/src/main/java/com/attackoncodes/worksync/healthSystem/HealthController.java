@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class HealthController {
 
     private final DataSource dataSource;
