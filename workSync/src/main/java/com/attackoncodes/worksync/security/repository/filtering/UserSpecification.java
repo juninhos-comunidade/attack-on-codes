@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import com.tom.security.hash.security.enums.Role;
-import com.tom.security.hash.security.model.User;
+import com.attackoncodes.worksync.security.model.Role;
+import com.attackoncodes.worksync.security.model.User;
 
 import jakarta.persistence.criteria.Predicate;
 

@@ -16,9 +16,9 @@ public enum Role {
 
 	ANONYMOUS(Collections.emptySet()),
 
-	ALUNO(Permission.USER_PERMISSIONS),
+	FUNCIONARIO(Stream.of(Permission.FUNCIONARIO_PERMISSIONS).flatMap(Set::stream).collect(Collectors.toSet())),
 
-	ADMIN(Stream.of(Permission.USER_PERMISSIONS, Permission.ADMIN_PERMISSIONS).flatMap(Set::stream)
+	ADMIN(Stream.of(Permission.FUNCIONARIO_PERMISSIONS, Permission.ADMIN_PERMISSIONS).flatMap(Set::stream)
 			.collect(Collectors.toSet()));
 
 	@Getter

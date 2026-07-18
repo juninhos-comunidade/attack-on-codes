@@ -1,7 +1,7 @@
 package com.attackoncodes.worksync.security.dto.authentication;
 
+import com.attackoncodes.worksync.global.constraints.UserConstraints;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.tom.security.hash.global.constraints.UserConstraints;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,15 +25,13 @@ public record RegisterRequest(
 				+ " characters")
 		String email,
 		
-	    @NotBlank(message = "Password must not be blank")
-		@Size(min = UserConstraints.MINIMAL_PASSWORD_SIZE, message = "Password must be at least "
+		@NotBlank(message = "Password must not be blank") @Size(min = UserConstraints.MINIMAL_PASSWORD_SIZE, message = "Password must be at least "
 				+ UserConstraints.MINIMAL_PASSWORD_SIZE
 				+ " characters")
 		String password,
 		
 		@JsonAlias({ "passwordConfirmation",
-				"confirmPassword" })
-	    @NotBlank(message = "Confirm password must not be blank")		
+				"confirmPassword" }) @NotBlank(message = "Confirm password must not be blank") 
 		String confirmPassword
 		
 		) {

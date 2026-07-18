@@ -2,7 +2,7 @@ package com.attackoncodes.worksync.exception.security;
 
 import org.springframework.http.HttpStatus;
 
-import com.tom.security.hash.exception.global.GlobalRuntimeException;
+import com.attackoncodes.worksync.exception.global.GlobalRuntimeException;
 
 import lombok.EqualsAndHashCode;
 

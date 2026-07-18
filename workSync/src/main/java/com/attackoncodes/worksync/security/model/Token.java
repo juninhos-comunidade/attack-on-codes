@@ -1,7 +1,6 @@
 package com.attackoncodes.worksync.security.model;
 
-import com.tom.security.hash.global.Auditable;
-import com.tom.security.hash.security.enums.TokenType;
+import com.attackoncodes.worksync.global.Auditable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,10 +41,10 @@ public class Token extends Auditable {
 	private TokenType tokenType = TokenType.BEARER;
 
 	@Column(name = "revoked", updatable = true)
-	private boolean revoked; // can't be class 'Boolean' cause i don't wanna store null values on db.
+	private boolean revoked;
 
 	@Column(name = "expired", updatable = true)
-	private boolean expired; // can't be class 'Boolean' cause i don't wanna store null values on db.
+	private boolean expired;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)

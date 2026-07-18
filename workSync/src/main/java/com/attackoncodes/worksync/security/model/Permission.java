@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Permission {
 
-	USER_READ("user:read"),
-	USER_UPDATE("user:update"),
-	USER_DELETE("user:delete"),
-	USER_CREATE("user:create"),
+	FUNCIONARIO_READ("funcionario:read"),
+	FUNCIONARIO_UPDATE("funcionario:update"),
+	FUNCIONARIO_DELETE("funcionario:delete"),
+	FUNCIONARIO_CREATE("funcionario:create"),
 
 	ADMIN_READ("admin:read"),
 	ADMIN_UPDATE("admin:update"),
@@ -22,12 +22,10 @@ public enum Permission {
 	@Getter
 	private final String permission;
 
-	protected static final Set<Permission> USER_PERMISSIONS = Set.of(
-            USER_READ, USER_UPDATE, USER_DELETE, USER_CREATE
-    );
+	protected static final Set<Permission> FUNCIONARIO_PERMISSIONS = Set.of(FUNCIONARIO_READ, FUNCIONARIO_UPDATE,
+			FUNCIONARIO_DELETE, FUNCIONARIO_CREATE);
 
-    protected static final Set<Permission> ADMIN_PERMISSIONS = Set.of(
-            ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE, ADMIN_CREATE
-    );
+	protected static final Set<Permission> ADMIN_PERMISSIONS = Set.of(ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE,
+			ADMIN_CREATE);
 
 }

@@ -1,6 +1,6 @@
 package com.attackoncodes.worksync.security.dto.user;
 
-import com.tom.security.hash.global.constraints.UserConstraints;
+import com.attackoncodes.worksync.global.constraints.UserConstraints;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;

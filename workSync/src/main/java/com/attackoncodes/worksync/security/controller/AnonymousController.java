@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tom.security.hash.security.dto.authentication.AuthenticationRequest;
-import com.tom.security.hash.security.dto.authentication.AuthenticationResponse;
-import com.tom.security.hash.security.dto.authentication.RegisterRequest;
-import com.tom.security.hash.security.service.AuthenticationService;
+import com.attackoncodes.worksync.security.dto.authentication.AuthenticationRequest;
+import com.attackoncodes.worksync.security.dto.authentication.AuthenticationResponse;
+import com.attackoncodes.worksync.security.dto.authentication.RegisterRequest;
+import com.attackoncodes.worksync.security.service.AuthenticationService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

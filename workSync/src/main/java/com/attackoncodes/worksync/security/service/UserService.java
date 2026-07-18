@@ -1,44 +1,27 @@
 package com.attackoncodes.worksync.security.service;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tom.security.hash.exception.sql.NotFoundException;
-import com.tom.security.hash.logic.common.ResourceUtils;
-import com.tom.security.hash.logic.security.SecurityUtils;
-import com.tom.security.hash.security.component.CookiesComponent;
-import com.tom.security.hash.security.component.TokenComponent;
-import com.tom.security.hash.security.component.UserComponent;
-import com.tom.security.hash.security.dto.user.AccountUpdateRequest;
-import com.tom.security.hash.security.dto.user.ConfirmationRequest;
-import com.tom.security.hash.security.dto.user.PageLoginHistoryResponse;
-import com.tom.security.hash.security.dto.user.PageUserResponse;
-import com.tom.security.hash.security.dto.user.PasswordUpdateRequest;
-import com.tom.security.hash.security.dto.user.UserExport;
-import com.tom.security.hash.security.dto.user.UserResponse;
-import com.tom.security.hash.security.enums.Role;
-import com.tom.security.hash.security.mapper.LoginMapper;
-import com.tom.security.hash.security.mapper.UserMapper;
-import com.tom.security.hash.security.model.User;
-import com.tom.security.hash.security.repository.LoginHistoryRepository;
-import com.tom.security.hash.security.repository.UserRepository;
-import com.tom.security.hash.security.repository.filtering.UserSortOption;
-import com.tom.security.hash.security.repository.filtering.UserSortParameter;
-import com.tom.security.hash.security.repository.filtering.UserSpecification;
+import com.attackoncodes.worksync.logic.security.SecurityUtils;
+import com.attackoncodes.worksync.security.component.UserComponent;
+import com.attackoncodes.worksync.security.dto.user.PageUserResponse;
+import com.attackoncodes.worksync.security.dto.user.UserResponse;
+import com.attackoncodes.worksync.security.mapper.UserMapper;
+import com.attackoncodes.worksync.security.model.Role;
+import com.attackoncodes.worksync.security.model.User;
+import com.attackoncodes.worksync.security.repository.UserRepository;
+import com.attackoncodes.worksync.security.repository.filtering.UserSortOption;
+import com.attackoncodes.worksync.security.repository.filtering.UserSortParameter;
+import com.attackoncodes.worksync.security.repository.filtering.UserSpecification;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -47,7 +30,7 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class UserService {
 
-	@Value("${application.size.page:20}")
+	@Value("${application.page.size:20}")
 	private int PAGE_SIZE;
 
 	@Value("${cookies.security.cookie-name}")
@@ -58,15 +41,14 @@ public class UserService {
 	private final UserSortParameter userSort;
 
 	private final UserComponent userComponent;
+	
+	private final SecurityUtils securityUtils;
+	
+	/*
 	private final TokenComponent tokenComponent;
 	private final CookiesComponent cookiesComponent;
-
 	private final PasswordEncoder passwordEncoder;
-	private final SecurityUtils securityUtils;
-	private final ResourceUtils resourceUtils;
-
-	private final LoginHistoryRepository loginRepository;
-	private final LoginMapper loginMapper;
+ 	*/
 
 	@Transactional(readOnly = true)
 	public UserResponse getCurrentUserAuthenticated() {
@@ -81,14 +63,6 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageLoginHistoryResponse viewCurrentUserLoginHistory(int page) {
-		var user = securityUtils.getAuthenticatedUserOrThrow();
-		Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-		var loginHistory = loginRepository.findAllByUser(user.getId(), pageable);
-		return loginMapper.toResponse(loginHistory);
-	}
-
-	@Transactional(readOnly = true)
 	public PageUserResponse searchUserByParams(int page, String username, String email, Role roles,
 			UserSortOption sortParam) {
 		var finalSort = userSort.selectUserSort(sortParam);
@@ -98,27 +72,8 @@ public class UserService {
 		return userMapper.toResponse(users);
 	}
 
-	@Transactional(readOnly = true)
-	public UserExport exportMyUserData() {
-		var detachedUser = securityUtils.getAuthenticatedUserOrThrow();
-		log.info("IP: {}, user: {}, is requesting their data.", securityUtils.getRequestingClientIp(),
-				detachedUser.getUsername());
-
-		var user = userRepository.findById(detachedUser.getId())
-				.orElseThrow(() -> new NotFoundException("Authenticated user not found in database."));
-
-		var userData = userMapper.dataExporation(user);
-		byte[] data = resourceUtils.bytesToJson(userData);
-
-		String jsonFileName = "user_data_" + user.getUsername() + ".json";
-		String zipFileName = "user_data_" + user.getUsername() + ".zip";
-
-		byte[] zipBytes = resourceUtils.resourceToBytes(data, jsonFileName);
-		Resource resource = new ByteArrayResource(zipBytes);
-
-		return new UserExport(resource, zipFileName, zipBytes.length);
-	}
-
+	/*
+	
 	@Transactional
 	public UserResponse updateUser(AccountUpdateRequest request) {
 		var user = securityUtils.getAuthenticatedUserOrThrow();
@@ -190,5 +145,6 @@ public class UserService {
 		cookiesComponent.clearCookie(httpResponse, refreshTokenCookieName);
 		log.info("The user {} has deleted their account", user.getEmail());
 	}
+	 */
 
 }

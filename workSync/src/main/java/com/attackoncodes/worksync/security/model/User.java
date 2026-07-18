@@ -9,10 +9,9 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.attackoncodes.worksync.global.Auditable;
+import com.attackoncodes.worksync.global.constraints.UserConstraints;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tom.security.hash.global.Auditable;
-import com.tom.security.hash.global.constraints.UserConstraints;
-import com.tom.security.hash.security.enums.Role;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,13 +47,17 @@ public class User extends Auditable implements UserDetails {
 	private UUID id;
 
 	@ToString.Include
-	@Column(name = "nickname", length = UserConstraints.NICKNAME_MAX_LENGTH, unique = true, updatable = true, nullable = false)
+	@Column(name = "nickname", length = UserConstraints.NICKNAME_MAX_LENGTH, unique = true, nullable = false)
 	private String nickname;
 
 	@ToString.Include
-	@Column(name = "email", length = UserConstraints.EMAIL_MAX_LENGTH, unique = true, updatable = true, nullable = false)
+	@Column(name = "email", length = UserConstraints.EMAIL_MAX_LENGTH, unique = true, nullable = false)
 	private String email;
 
+	@ToString.Include
+	@Column(name = "cpf", length = 14, unique = true, nullable = true)
+	private String cpf;
+	
 	@Column(name = "password", unique = false, updatable = true, nullable = false)
 	private String password;
 
@@ -65,9 +68,6 @@ public class User extends Auditable implements UserDetails {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@BatchSize(size = 20)
 	private List<Token> tokens;
-
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<LoginHistory> loginHistories;
 
 	@Column(name = "account_non_locked", nullable = false)
 	private boolean accountNonLocked = true;

@@ -1,11 +1,7 @@
 package com.attackoncodes.worksync.config;
 
-import java.time.ZonedDateTime;
-import java.util.Optional;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,15 +11,15 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
-import com.tom.security.hash.exception.sql.NotFoundException;
-import com.tom.security.hash.logic.auditing.ApplicationAuditAware;
-import com.tom.security.hash.security.repository.UserRepository;
+import com.attackoncodes.worksync.exception.sql.NotFoundException;
+import com.attackoncodes.worksync.logic.auditing.ApplicationAuditAware;
+import com.attackoncodes.worksync.security.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider", dateTimeProviderRef = "dateTimeProvider")
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider") /*, dateTimeProviderRef = "dateTimeProvider" */
 public class SystemConfiguration {
 
 	private final UserRepository repository;
@@ -49,10 +45,12 @@ public class SystemConfiguration {
 		return new ApplicationAuditAware();
 	}
 
+	/*
 	@Bean
 	DateTimeProvider dateTimeProvider() {
 		return () -> Optional.of(ZonedDateTime.now());
 	}
+	*/
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
@@ -63,6 +61,5 @@ public class SystemConfiguration {
 				2 // iterations
 		);
 	}
-	// return new BCryptPasswordEncoder(12);
 
 }

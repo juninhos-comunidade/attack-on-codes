@@ -3,10 +3,10 @@ package com.attackoncodes.worksync.security.component;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import com.tom.security.hash.security.enums.TokenType;
-import com.tom.security.hash.security.model.Token;
-import com.tom.security.hash.security.model.User;
-import com.tom.security.hash.security.repository.TokenRepository;
+import com.attackoncodes.worksync.security.model.Token;
+import com.attackoncodes.worksync.security.model.TokenType;
+import com.attackoncodes.worksync.security.model.User;
+import com.attackoncodes.worksync.security.repository.TokenRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

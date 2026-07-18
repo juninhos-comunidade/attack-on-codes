@@ -4,10 +4,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.tom.security.hash.exception.sql.DataViolationException;
-import com.tom.security.hash.exception.sql.NotFoundException;
-import com.tom.security.hash.security.model.User;
-import com.tom.security.hash.security.repository.UserRepository;
+import com.attackoncodes.worksync.exception.sql.DataViolationException;
+import com.attackoncodes.worksync.exception.sql.NotFoundException;
+import com.attackoncodes.worksync.security.model.User;
+import com.attackoncodes.worksync.security.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

@@ -2,7 +2,7 @@ package com.attackoncodes.worksync.exception.sql;
 
 import org.springframework.http.HttpStatus;
 
-import com.tom.security.hash.exception.global.GlobalRuntimeException;
+import com.attackoncodes.worksync.exception.global.GlobalRuntimeException;
 
 @SuppressWarnings("serial")
 public class DataViolationException extends GlobalRuntimeException {

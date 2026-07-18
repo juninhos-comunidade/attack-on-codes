@@ -11,23 +11,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tom.security.hash.exception.security.ActiveSessionException;
-import com.tom.security.hash.exception.security.InvalidTokenException;
-import com.tom.security.hash.logic.caching.LoginAttemptComponent;
-import com.tom.security.hash.logic.security.JwtService;
-import com.tom.security.hash.logic.security.SecurityUtils;
-import com.tom.security.hash.security.component.CookiesComponent;
-import com.tom.security.hash.security.component.LoginHistoryComponent;
-import com.tom.security.hash.security.component.TokenComponent;
-import com.tom.security.hash.security.component.UserComponent;
-import com.tom.security.hash.security.dto.authentication.AuthenticationRequest;
-import com.tom.security.hash.security.dto.authentication.AuthenticationResponse;
-import com.tom.security.hash.security.dto.authentication.RegisterRequest;
-import com.tom.security.hash.security.enums.Role;
-import com.tom.security.hash.security.mapper.UserMapper;
-import com.tom.security.hash.security.model.User;
-import com.tom.security.hash.security.repository.TokenRepository;
-import com.tom.security.hash.security.repository.UserRepository;
+import com.attackoncodes.worksync.exception.security.ActiveSessionException;
+import com.attackoncodes.worksync.exception.security.InvalidTokenException;
+import com.attackoncodes.worksync.logic.security.JwtService;
+import com.attackoncodes.worksync.logic.security.SecurityUtils;
+import com.attackoncodes.worksync.security.component.CookiesComponent;
+import com.attackoncodes.worksync.security.component.TokenComponent;
+import com.attackoncodes.worksync.security.component.UserComponent;
+import com.attackoncodes.worksync.security.dto.authentication.AuthenticationRequest;
+import com.attackoncodes.worksync.security.dto.authentication.AuthenticationResponse;
+import com.attackoncodes.worksync.security.dto.authentication.RegisterRequest;
+import com.attackoncodes.worksync.security.mapper.UserMapper;
+import com.attackoncodes.worksync.security.model.Role;
+import com.attackoncodes.worksync.security.model.User;
+import com.attackoncodes.worksync.security.repository.TokenRepository;
+import com.attackoncodes.worksync.security.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,8 +56,6 @@ public class AuthenticationService {
 	private final TokenComponent tokenComponent;
 
 	private final CookiesComponent cookiesComponent;
-	private final LoginAttemptComponent loginTryService;
-	private final LoginHistoryComponent loginHistory;
 
 	@Transactional
 	public AuthenticationResponse register(RegisterRequest request, HttpServletRequest httpRequest,
@@ -77,13 +73,11 @@ public class AuthenticationService {
 
 		var user = userMapper.build(request);
 		user.setPassword(passwordEncoder.encode(request.password()));
-		user.setRoles(Role.ALUNO);
+		user.setRoles(Role.FUNCIONARIO);
 
 		var savedUser = userRepository.save(user);
 		var jwtToken = jwtService.generateToken(savedUser);
 		var refreshToken = jwtService.generateRefreshToken(savedUser);
-
-		loginHistory.storeLoginHistory(savedUser, userIp);
 
 		tokenComponent.saveUserToken(savedUser, refreshToken);
 		cookiesComponent.addCookie(httpResponse, refreshTokenCookieName, refreshToken, refreshExpiration);
@@ -99,7 +93,6 @@ public class AuthenticationService {
 		var userIp = securityUtils.getRequestingClientIp();
 		log.info("IP: {}, is authenticating user: {}", userIp, identifier);
 
-		loginTryService.isLoginBlocked(identifier);
 		checkIfUserIsAlreadyAuthenticated(httpRequest, refreshTokenCookieName);
 
 		try {
@@ -114,13 +107,10 @@ public class AuthenticationService {
 			cookiesComponent.clearCookie(httpResponse, refreshTokenCookieName);
 			cookiesComponent.addCookie(httpResponse, refreshTokenCookieName, refreshToken, refreshExpiration);
 
-			loginTryService.loginSucceeded(identifier);
-			loginHistory.storeLoginHistory(user, userIp);
 			log.info("IP: {}, authenticated with the user: {}", userIp, user.getUsername());
 			return userMapper.toResponse(jwtToken);
 		} catch (BadCredentialsException e) {
 			log.warn("Failed login attempt for user: {}", request.email());
-			loginTryService.loginFailed(identifier);
 			throw e;
 		}
 	}

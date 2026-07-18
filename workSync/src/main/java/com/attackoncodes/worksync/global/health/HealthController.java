@@ -1,4 +1,4 @@
-package com.attackoncodes.worksync.healthSystem;
+package com.attackoncodes.worksync.global.health;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

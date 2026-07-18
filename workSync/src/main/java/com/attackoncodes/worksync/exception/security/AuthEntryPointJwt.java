@@ -1,6 +1,7 @@
 package com.attackoncodes.worksync.exception.security;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
@@ -8,8 +9,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import com.attackoncodes.worksync.exception.global.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tom.security.hash.exception.global.ErrorResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		Map<String, String> errors = new java.util.LinkedHashMap<>();
+		Map<String, String> errors = new LinkedHashMap<>();
 	    errors.put("status", String.valueOf(HttpServletResponse.SC_UNAUTHORIZED));
 	    errors.put("error", "Unauthorized");
 	    errors.put("message", authException.getMessage());

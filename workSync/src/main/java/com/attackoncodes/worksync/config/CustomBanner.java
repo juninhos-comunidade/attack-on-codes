@@ -57,12 +57,11 @@ public class CustomBanner implements Banner {
 		}
 	}
 
-	public String getLocalMachineIp() throws Exception {
+	private String getLocalMachineIp() throws Exception {
 		return InetAddress.getLocalHost().getHostAddress();
 	}
 	
-	public String getMachinePublicIp() throws IOException, Exception {
-		@SuppressWarnings("deprecation")
+	private String getMachinePublicIp() throws IOException, Exception {
 		URL url = new URL("https://api.ipify.org");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.tom.security.hash.security.model.Token;
+import com.attackoncodes.worksync.security.model.Token;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Long> {

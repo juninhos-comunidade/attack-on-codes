@@ -10,15 +10,14 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.data.domain.Page;
 
-import com.tom.security.hash.security.dto.authentication.AuthenticationResponse;
-import com.tom.security.hash.security.dto.authentication.RegisterRequest;
-import com.tom.security.hash.security.dto.user.AccountUpdateRequest;
-import com.tom.security.hash.security.dto.user.DataExportation;
-import com.tom.security.hash.security.dto.user.PageUserResponse;
-import com.tom.security.hash.security.dto.user.UserResponse;
-import com.tom.security.hash.security.model.User;
+import com.attackoncodes.worksync.security.dto.authentication.AuthenticationResponse;
+import com.attackoncodes.worksync.security.dto.authentication.RegisterRequest;
+import com.attackoncodes.worksync.security.dto.user.AccountUpdateRequest;
+import com.attackoncodes.worksync.security.dto.user.PageUserResponse;
+import com.attackoncodes.worksync.security.dto.user.UserResponse;
+import com.attackoncodes.worksync.security.model.User;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MappingUtils.class })
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
 	@Mapping(target = "id", ignore = true)
@@ -28,15 +27,11 @@ public interface UserMapper {
 
 	AuthenticationResponse toResponse(String accessToken);
 
-	@Mapping(source = "user", target = "lastLogin", qualifiedByName = "getLastLoginTime")
 	UserResponse toResponse(User user);
 
 	@Mapping(target = "id", ignore = true)
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void update(@MappingTarget User user, AccountUpdateRequest request);
-
-	@Mapping(source = "enabled", target = "accountEnabled")
-	DataExportation dataExporation(User user);
 
 	List<UserResponse> toResponseList(List<User> users);
 

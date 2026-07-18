@@ -8,15 +8,18 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.tom.security.hash.global.system.SystemActionContext;
-import com.tom.security.hash.security.enums.Role;
-import com.tom.security.hash.security.model.User;
-import com.tom.security.hash.security.repository.UserRepository;
+import com.attackoncodes.worksync.global.system.SystemActionContext;
+import com.attackoncodes.worksync.logic.bucket.AwsProperties;
+import com.attackoncodes.worksync.security.model.Role;
+import com.attackoncodes.worksync.security.model.User;
+import com.attackoncodes.worksync.security.repository.UserRepository;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.s3.S3Client;
 
-@Log4j2
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SystemStart implements CommandLineRunner {
@@ -30,13 +33,21 @@ public class SystemStart implements CommandLineRunner {
 	@Value("${settings.security.password}")
 	private String password;
 
+	private final SystemActionContext systemAction;
+
 	private final UserRepository repository;
 	private final PasswordEncoder passwordEncoder;
-	private final SystemActionContext systemAction;
+
+	private final AwsProperties properties;
+	private final S3Client s3Client;
+
+	@Getter
+	private boolean s3Connected = false;
 
 	@Override
 	public void run(String... args) throws Exception {
 		generateAdminUser();
+		verifyS3Connection();
 	}
 
 	@EventListener(ContextRefreshedEvent.class)
@@ -60,5 +71,17 @@ public class SystemStart implements CommandLineRunner {
 			}
 			return null;
 		});
+	}
+
+	@EventListener(ContextRefreshedEvent.class)
+	public void verifyS3Connection() {
+		try {
+			s3Client.getBucketLocation(b -> b.bucket(properties.getBucket()));
+			log.info("Connection successful on bucket: " + properties.getBucket());
+			s3Connected = true;
+		} catch (Exception e) {
+			log.error("S3 connection failed: " + e.getMessage());
+			s3Connected = false;
+		}
 	}
 }
